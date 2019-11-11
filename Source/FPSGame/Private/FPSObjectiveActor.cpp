@@ -5,12 +5,13 @@
 #include "Components/SphereComponent.h" // for USphereComponent
 #include "Components/StaticMeshComponent.h" // for UStaticMeshComponent
 #include "Kismet/GameplayStatics.h" // for UGameplayStatics
+#include "FPSCharacter.h" //for AFPSCharacter;
 
 // Sets default values
 AFPSObjectiveActor::AFPSObjectiveActor()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
 	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp"));
 	SetRootComponent(MeshComp);
@@ -46,6 +47,16 @@ void AFPSObjectiveActor::NotifyActorBeginOverlap(AActor* OtherActor)
 	Super::NotifyActorBeginOverlap(OtherActor);
 
 	SpawnEffects();
+
+	AFPSCharacter* OverlappingCharacter = Cast<AFPSCharacter>(OtherActor);			//We're casting here to AFPSCharacter, so that we can access the vars that it will have (bIsCarryingObjective). If the cast fails, the code won't run, due to the pointer protection below. 
+
+	if (OverlappingCharacter)														//Pointer Protection
+	{ 
+		OverlappingCharacter->bIsCarryingObjective = true;
+
+		Destroy();																	// Destroy this actor, since we don't want anyone else to pick it up.
+	}
+	
 }
 
 
