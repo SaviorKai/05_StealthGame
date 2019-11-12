@@ -37,12 +37,21 @@ public:
 
 
 private:
+	/// Functions
 	// Remember to always include UFUNCTION of binding "OnComponentHit / Overlap" functions.
 	UFUNCTION()
 		void HandleOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	
+	void SpawnParticleEffect();
 
-	UPROPERTY(EditDefaultsOnly, Category = "Particles")
+	///Member Vars
+	UPROPERTY(EditDefaultsOnly, Category = "LaunchPad")
 		UParticleSystem* ParticleEffectSystem;
 
-	void SpawnParticleEffect();
+	UPROPERTY(EditInstanceOnly, Category = "LaunchPad")						//NOTE : EditInstanceOnly
+		float LaunchStrength = 1500.0f;
+	
+	UPROPERTY(EditInstanceOnly, Category = "LaunchPad")						//NOTE : EditInstanceOnly
+		float LaunchPitchAngle = 45.0f;
+	
 };

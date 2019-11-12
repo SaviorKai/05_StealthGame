@@ -54,38 +54,31 @@ void ALaunchPad::HandleOverlap(UPrimitiveComponent* OverlappedComp, AActor* Othe
 	
 	if (!OtherActor) { return; } //Pointer Protection
 
-	if (Cast<APawn>(OtherActor))
-	{
-		///If it is not a Pawn.
-		//Calculate the force required
-		auto LaunchAngle = FRotator(90, 0, 0);													//TODO: Remove Magic Number(s)
-		auto LaunchSpeed = GetRootComponent()->GetForwardVector() + LaunchAngle.Vector();
-		auto ApplyForce = LaunchSpeed * 1000;
+	//Calculate the force required
+	FRotator LaunchDirection = GetActorRotation();							// Gets the rotation of the launchpad as a FRotator.
+	LaunchDirection.Pitch += LaunchPitchAngle;								// Add the angle to pitch
+	FVector LaunchVelocity = LaunchDirection.Vector() * LaunchStrength;		// Converts the FRotator to a Vector, then multiplies it with the strength.
 
+	//Use the cast to determine if it's a character.
+	if (Cast<AFPSCharacter>(OtherActor))									
+	{
+		/* If it is a Character (Cast success). */
 		//Cast to ACharacter type (Our version), and Launch Character
-		Cast<AFPSCharacter>(OtherActor)->LaunchCharacter(										//Launch the character. Triggers the OnLaunched event.
-			ApplyForce,																			//TODO: Remove Magic Number(s)
-			true,																				//if true, replace the XY velocity of the character, instead of adding to it.
-			true																				//if true, replace the z velocity of the character, instead of adding to it.
+		Cast<AFPSCharacter>(OtherActor)->LaunchCharacter(					//Launch the character. Triggers the OnLaunched event.
+			LaunchVelocity,													//TODO: Remove Magic Number(s)
+			true,															//if true, replace the XY velocity of the character, instead of adding to it.
+			true															//if true, replace the z velocity of the character, instead of adding to it.
 		);
 
 		//Particle Effect on use
 		SpawnParticleEffect();
 	}
-	else
+	else if (OtherComp->IsSimulatingPhysics())								//Since its not a character, we'll use UPrimitiveComponent::IsSimulatingPhysics() to check the other component that overllapped us.
 	{
-		///If it's not a Pawn.
-		//Cast to the correct type (So we can call Apply force) and Get the root component
-		auto OverlappingActor = Cast<UPrimitiveComponent>(OtherActor->GetRootComponent());
-		
-		//Calculate the force required
-		auto LaunchAngle = FRotator(120, 0, 0);													//TODO: Remove Magic Number(s)
-		auto LaunchSpeed = GetRootComponent()->GetForwardVector() + LaunchAngle.Vector();
-		auto ApplyForce = LaunchSpeed * 250000;													//TODO: Remove Magic Number(s)
-
-		//Add Force
-		OverlappingActor->AddForce(
-			ApplyForce,
+		/* If it's not a Pawn. (Cast Failed) */
+		//Launch
+		OtherComp->AddImpulse(												// Used AddImpulse (NOT AddForce)
+			LaunchVelocity,
 			NAME_None,
 			true
 		);
@@ -98,7 +91,7 @@ void ALaunchPad::HandleOverlap(UPrimitiveComponent* OverlappedComp, AActor* Othe
 void ALaunchPad::SpawnParticleEffect()
 {
 	//Particle Effect on use
-	if (!ParticleEffectSystem) { return; }													//Pointer Protection
+	if (!ParticleEffectSystem) { return; }									//Pointer Protection
 	UGameplayStatics::SpawnEmitterAtLocation(
 		this,
 		ParticleEffectSystem,
