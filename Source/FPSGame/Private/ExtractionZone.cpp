@@ -6,6 +6,7 @@
 #include "Components/DecalComponent.h"	// for UDecalComponent
 #include "FPSCharacter.h" // for AFPSCharacter
 #include "FPSGameMode.h" // AFPSGameMode
+#include "Kismet/GameplayStatics.h" // UGameplayStatics
 
 // Sets default values
 AExtractionZone::AExtractionZone()
@@ -41,7 +42,13 @@ void AExtractionZone::HandleOverlap(UPrimitiveComponent* OverlappedComp, AActor*
 		AFPSGameMode* OurGameMode = Cast<AFPSGameMode>(GetWorld()->GetAuthGameMode());		//Get game mode and cast to our type.	//Note: GetAuthGameMode() does not work in Multiplayer.(More about this later)
 		
 		OurGameMode->CompleteMission(OverlappingCharacter);
+	}
+	else
+	{
+		//PlaySound
+		if (!ObjectiveMissingSound) { return; }												//Pointer Protection
 
+		UGameplayStatics::PlaySound2D(this, ObjectiveMissingSound);
 	}
 }
 
