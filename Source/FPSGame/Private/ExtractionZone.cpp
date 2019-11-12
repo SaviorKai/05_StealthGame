@@ -4,6 +4,8 @@
 #include "ExtractionZone.h"
 #include "Components/BoxComponent.h"	// for UBoxComponent
 #include "Components/DecalComponent.h"	// for UDecalComponent
+#include "FPSCharacter.h" // for AFPSCharacter
+#include "FPSGameMode.h" // AFPSGameMode
 
 // Sets default values
 AExtractionZone::AExtractionZone()
@@ -30,6 +32,16 @@ AExtractionZone::AExtractionZone()
 
 void AExtractionZone::HandleOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Overlapped with Extraction"));
+	if (!OtherActor) { return; }
+
+	auto OverlappingCharacter = Cast<AFPSCharacter>(OtherActor);							//Casting to AFPSCharacter so that we can access the variables.
+
+	if (OverlappingCharacter->bIsCarryingObjective)											//Check if the bool is true or false
+	{
+		AFPSGameMode* OurGameMode = Cast<AFPSGameMode>(GetWorld()->GetAuthGameMode());		//Get game mode and cast to our type.	//Note: GetAuthGameMode() does not work in Multiplayer.(More about this later)
+		
+		OurGameMode->CompleteMission(OverlappingCharacter);
+
+	}
 }
 

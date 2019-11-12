@@ -14,3 +14,11 @@ AFPSGameMode::AFPSGameMode()
 	// use our custom HUD class
 	HUDClass = AFPSHUD::StaticClass();
 }
+
+void AFPSGameMode::CompleteMission(APawn* InstigatorPawn)
+{
+	if (!InstigatorPawn) { return; }							//Pointer Protection
+	InstigatorPawn->DisableInput(nullptr);						//This turns off the input for the Pawn passed (This doesn't destroy the controller).
+
+	OnMissionCompleted(InstigatorPawn);							//This Function is BlueprintImplementable (Thus not defined in C++)
+}

@@ -14,6 +14,11 @@ class AFPSGameMode : public AGameModeBase
 public:
 
 	AFPSGameMode();
+
+	void CompleteMission(APawn* InstigatorPawn);
+		
+	UFUNCTION(BlueprintImplementableEvent, Category="GameMode")									//NOTE: BlueprintImplementableEvents, should NOT be defined in C++ (its defined in Blueprints!)
+		void OnMissionCompleted(APawn* InstigatorPawn);
 };
 
 
