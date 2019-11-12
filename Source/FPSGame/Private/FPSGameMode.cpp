@@ -4,6 +4,8 @@
 #include "FPSHUD.h"
 #include "FPSCharacter.h"
 #include "UObject/ConstructorHelpers.h"
+#include "GameFramework/PlayerController.h" //APlayerController
+#include "Kismet/GameplayStatics.h" // UGameplayStatics
 
 AFPSGameMode::AFPSGameMode()
 {
@@ -18,7 +20,21 @@ AFPSGameMode::AFPSGameMode()
 void AFPSGameMode::CompleteMission(APawn* InstigatorPawn)
 {
 	if (!InstigatorPawn) { return; }							//Pointer Protection
+	
 	InstigatorPawn->DisableInput(nullptr);						//This turns off the input for the Pawn passed (This doesn't destroy the controller).
 
 	OnMissionCompleted(InstigatorPawn);							//This Function is BlueprintImplementable (Thus not defined in C++)
+
+	
+	//Set Endgame Spectator View
+	if (!SpectatingViewportClass) { return; }														//PointerProtection
+	auto NewViewTarget = UGameplayStatics::GetActorOfClass(this, SpectatingViewportClass);			// Note: To get the class, we added a variable we can set in blueprints, to pass the correct value.
+	
+	auto InstigatorPawnController = Cast<APlayerController>(InstigatorPawn->GetController());       // Get Controller, which returns AController, and cast it down to APlayerController
+
+	InstigatorPawnController->SetViewTargetWithBlend(
+		NewViewTarget,
+		0.5f,
+		EViewTargetBlendFunction::VTBlend_Cubic
+	);
 }

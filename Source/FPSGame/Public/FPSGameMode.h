@@ -19,6 +19,10 @@ public:
 		
 	UFUNCTION(BlueprintImplementableEvent, Category="GameMode")									//NOTE: BlueprintImplementableEvents, should NOT be defined in C++ (its defined in Blueprints!)
 		void OnMissionCompleted(APawn* InstigatorPawn);
+
+protected:
+	UPROPERTY(EditDefaultsOnly, Category = "Spectating")
+		TSubclassOf<AActor> SpectatingViewportClass;
 };
 
 
