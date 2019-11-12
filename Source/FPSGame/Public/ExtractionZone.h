@@ -7,6 +7,7 @@
 #include "ExtractionZone.generated.h"
 
 class UBoxComponent; 
+class UDecalComponent;
 
 UCLASS()
 class FPSGAME_API AExtractionZone : public AActor
@@ -21,6 +22,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 		UBoxComponent* OverlapBoxComp;
+
+	UPROPERTY(VisibleAnywhere, Category = "Components")
+		UDecalComponent* DecalComp;
 
 private:
 	// Remember to always include UFUNCTION of binding "OnComponentHit / Overlap" functions.

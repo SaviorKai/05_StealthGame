@@ -2,7 +2,8 @@
 
 
 #include "ExtractionZone.h"
-#include "Components/BoxComponent.h"
+#include "Components/BoxComponent.h"	// for UBoxComponent
+#include "Components/DecalComponent.h"	// for UDecalComponent
 
 // Sets default values
 AExtractionZone::AExtractionZone()
@@ -16,6 +17,13 @@ AExtractionZone::AExtractionZone()
 	SetRootComponent(OverlapBoxComp);
 
 	OverlapBoxComp->OnComponentBeginOverlap.AddDynamic(this, &AExtractionZone::HandleOverlap);
+
+
+	//Add Decal Component
+	DecalComp = CreateDefaultSubobject<UDecalComponent>(TEXT("DecalComp"));
+	DecalComp->DecalSize = FVector(200.0f);
+	DecalComp->SetupAttachment(OverlapBoxComp);
+
 }
 
 
