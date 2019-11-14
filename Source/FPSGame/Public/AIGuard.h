@@ -40,12 +40,29 @@ protected:
 	FTimerHandle MyResetTimerHandle;
 
 	//Set Default Guard State from the Enum we created.
-	EAIState GuardState = EAIState::Suspicious;									//Updated in Begin Play(). I want the state to swap at start, because the change state code it set to not run if the state is the same.
+	EAIState GuardState = EAIState::Suspicious;														//Updated in Begin Play(). I want the state to swap at start, because the change state code it set to not run if the state is the same.
 
 	void SetGuardState(EAIState NewState);
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "AI")									
-		void OnStateChanged(EAIState NewState);															//Blueprint Event (Doesn't need to be defined!)
+		void OnStateChanged(EAIState NewState);														//Blueprint Event (Doesn't need to be defined!)
+
+	/// AI Patrolling ///
+	
+	UPROPERTY(EditInstanceOnly, Category = "AI")
+		bool bCanPatrol;
+
+	UPROPERTY(EditInstanceOnly, Category = "AI", meta = (EditCondition="bCanPatrol"))				//NOTE:  the meta setting will enable or disable the ability to change this in the editor if bCanPatrol is turned off. 
+		AActor* PatrolPointA;
+
+	UPROPERTY(EditInstanceOnly, Category = "AI", meta = (EditCondition = "bCanPatrol"))				//NOTE:  the meta setting will enable or disable the ability to change this in the editor if bCanPatrol is turned off. 
+		AActor* PatrolPointB;
+
+	AActor* CurrentPatrolPoint;
+
+	void MoveToNextPatrolPoint();
+	
+
 
 public:	
 	// Called every frame
