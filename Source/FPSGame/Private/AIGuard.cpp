@@ -5,6 +5,7 @@
 #include "Perception/PawnSensingComponent.h" //UPawnSensingComponent
 #include "DrawDebugHelpers.h" //DrawDebugSphere()
 #include "TimerManager.h" //GetWorldTimerManager
+#include "FPSGameMode.h" // AFPSGameMode
 
 // Sets default values
 AAIGuard::AAIGuard()
@@ -33,12 +34,16 @@ void AAIGuard::BeginPlay()
 void AAIGuard::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
 }
 
 void AAIGuard::HandleOnPawnSeen(APawn* SeenPawn)
 {
 	if (!SeenPawn) { return; }																	//Pointer Protection
 	
+	AFPSGameMode* OurGameMode = Cast<AFPSGameMode>(GetWorld()->GetAuthGameMode());				//Get game mode and cast to our type.	//Note: GetAuthGameMode() does not work in Multiplayer.(More about this later)
+	OurGameMode->CompleteMission(SeenPawn, false);
+
 	//Debug Code
 	UE_LOG(LogTemp, Warning, TEXT("I See you!"));
 	DrawDebugSphere(GetWorld(), SeenPawn->GetActorLocation(), 32.0f, 12, FColor::Blue, false, 10.0f);		
@@ -47,20 +52,19 @@ void AAIGuard::HandleOnPawnSeen(APawn* SeenPawn)
 void AAIGuard::HandleOnHearNoise(APawn* HeardPawn, const FVector& Location, float Volume)		// Changed 'Instigator' to 'HeardPawn'
 {
 	
-	///Turn when we hear you
+	/*Turn when we hear you*/
 	auto Direction = Location - GetActorLocation();												//Using Vector Math, we subtract the target location, from my location, to get the direction vector.
 	Direction.Normalize();																		//We normalize the vector, since we only want the direction rotation.
 	FRotator LookAtTarget = Direction.Rotation();												//Why didn't he just use this? (Instead of FRotationMatrix)
 	//FRotator LookAtTarget = FRotationMatrix::MakeFromX(Direction).Rotator();					//(Used my version instead). We use FRotationMatrix::MakeFromX().Rotator(); to turn it 
 	SetActorRotation(FRotator(0.0f,LookAtTarget.Yaw,0.0f));										//We only want to use the Yaw rotation here, so he doesn't rotate up and down.
-
 	
-	//Reset to original rotation after some time
+	/*Reset to original rotation after some time*/
 	//GetWorldTimerManager().ClearTimer(MyResetTimerHandle);									//Why did he use this? Doesn't seem like its needed, since the timer gets replaced.
 	GetWorldTimerManager().SetTimer(MyResetTimerHandle, this, &AAIGuard::ResetOrientation, 3.0f,false);
 																								
-																								
-																								//Debug Code
+	
+	/*Debug Code*/
 	UE_LOG(LogTemp, Warning, TEXT("I Hear you!"));
 	DrawDebugSphere(GetWorld(), Location, 32.0f, 12, FColor::Red, false, 10.0f);				//Instead of using the heard pawn (instigator), we just use the location the delegate returned :D)
 }

@@ -15,10 +15,10 @@ public:
 
 	AFPSGameMode();
 
-	void CompleteMission(APawn* InstigatorPawn);
+	void CompleteMission(APawn* InstigatorPawn, bool bMissionSuccess);
 		
-	UFUNCTION(BlueprintImplementableEvent, Category="GameMode")									//NOTE: BlueprintImplementableEvents, should NOT be defined in C++ (its defined in Blueprints!)
-		void OnMissionCompleted(APawn* InstigatorPawn);
+	UFUNCTION(BlueprintImplementableEvent, Category = "GameMode")									//NOTE: BlueprintImplementableEvents, should NOT be defined in C++ (its defined in Blueprints!)
+		void OnMissionCompleted(APawn* InstigatorPawn, bool bIsSucessful);
 
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Spectating")
