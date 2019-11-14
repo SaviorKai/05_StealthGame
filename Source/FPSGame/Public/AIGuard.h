@@ -32,4 +32,7 @@ public:
 	UFUNCTION() //ALWAYS HAS TO BE HERE FOR DELEGATE BINDING!
 		void HandleOnPawnSeen(APawn* SeenPawn); 
 
+	UFUNCTION() //ALWAYS HAS TO BE HERE FOR DELEGATE BINDING!
+		void HandleOnHearNoise(APawn* HeardPawn, const FVector& Location, float Volume);				// Changed 'Instigator' to 'HeardPawn'
+
 };
