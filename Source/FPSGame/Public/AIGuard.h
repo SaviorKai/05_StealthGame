@@ -8,6 +8,15 @@
 
 class UPawnSensingComponent;
 
+// Enum Class for saving the state of the Guard. Always remember to add UENUM(). 
+UENUM(BlueprintType)
+enum class EAIState : uint8
+{
+	Idle, 
+	Suspicious,
+	Alerted
+};
+
 UCLASS()
 class FPSGAME_API AAIGuard : public ACharacter
 {
@@ -20,17 +29,23 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
-	UPROPERTY(VisibleAnywhere, Category="Components")
-		UPawnSensingComponent* PawnSensingComp;
-
 	
-
 	UFUNCTION() //ALWAYS HAS TO BE HERE FOR DELEGATE BINDING!
 		void ResetOrientation();
-	
+
+	UPROPERTY(VisibleAnywhere, Category = "Components")
+		UPawnSensingComponent* PawnSensingComp;
+
 	FRotator OriginalRotation;
 	FTimerHandle MyResetTimerHandle;
+
+	//Set Default Guard State from the Enum we created.
+	EAIState GuardState = EAIState::Suspicious;									//Updated in Begin Play(). I want the state to swap at start, because the change state code it set to not run if the state is the same.
+
+	void SetGuardState(EAIState NewState);
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "AI")									
+		void OnStateChanged(EAIState NewState);															//Blueprint Event (Doesn't need to be defined!)
 
 public:	
 	// Called every frame
