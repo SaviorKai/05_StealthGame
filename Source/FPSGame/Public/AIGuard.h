@@ -24,6 +24,14 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category="Components")
 		UPawnSensingComponent* PawnSensingComp;
 
+	
+
+	UFUNCTION() //ALWAYS HAS TO BE HERE FOR DELEGATE BINDING!
+		void ResetOrientation();
+	
+	FRotator OriginalRotation;
+	FTimerHandle MyResetTimerHandle;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
