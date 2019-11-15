@@ -34,6 +34,21 @@ AFPSCharacter::AFPSCharacter()
 }
 
 
+void AFPSCharacter::Tick(float DetlaTime)
+{
+	Super::Tick(DetlaTime);
+
+	/// [NETWORKING] ///	
+	/// NOTE!!! THE BETTER SOLUTION HERE IS TO TURN ON THE PITCH TRACKING IN THE PLAYER ACTOR BLUEPRINT DETAILS SETTINGS (LIKE THE YAW IS TRACKED)
+	if (!IsLocallyControlled())																	/// TODO: Ensure we understand this. How does this work in Tick for all instances? doesn't make sense.
+	{
+		FRotator NewRot = CameraComponent->RelativeRotation;
+		NewRot.Pitch = RemoteViewPitch * 360.0f / 254.0f;										///TODO: This is bugged (not perfect) Need to understand the math here better. (* 360.0f / 255.0f) < --- This decompresses the RemoteViewPitch value to a regular rotation value (since it was compressed in it's definition). 
+
+		CameraComponent->SetRelativeRotation(NewRot);
+	}
+}
+
 void AFPSCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	// set up gameplay key bindings
@@ -48,6 +63,8 @@ void AFPSCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 }
+
+
 
 
 void AFPSCharacter::Fire()
