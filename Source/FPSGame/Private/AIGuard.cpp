@@ -7,6 +7,7 @@
 #include "TimerManager.h" //GetWorldTimerManager
 #include "FPSGameMode.h" // AFPSGameMode
 #include "Blueprint/AIBlueprintHelperLibrary.h" // UAIBlueprintHelperLibrary
+#include "Net/UnrealNetwork.h" // DOREPLIFETIME & GetLifetimeReplicatedProps
 
 
 
@@ -149,13 +150,15 @@ void AAIGuard::ResetOrientation()
 	}
 }
 
+
+
 void AAIGuard::SetGuardState(EAIState NewState)
 {
 	if (GuardState == NewState) { return; }														//If the state is already correctly set, do nothing.
 
 	GuardState = NewState;																		//else, update the state.
 
-	OnStateChanged(GuardState);
+	OnRep_GuardState();																			/// The funtion only runs on clients, but we also want it to run on the server. Thus, we manually call it here. We don't call OnStateChanged() directly, because it will run on both and possibly cause missmatch.
 }
 
 
@@ -178,4 +181,19 @@ void AAIGuard::MoveToNextPatrolPoint()
 	UAIBlueprintHelperLibrary::SimpleMoveToActor(GetController(), CurrentPatrolPoint);
 
 
+}
+
+
+/// [NETWORKING] ///
+void AAIGuard::OnRep_GuardState()
+{
+	OnStateChanged(GuardState);
+}
+
+/// [NETWORKING] ///
+void AAIGuard::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AAIGuard, GuardState);
 }

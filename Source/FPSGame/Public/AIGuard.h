@@ -40,12 +40,18 @@ protected:
 	FTimerHandle MyResetTimerHandle;
 
 	//Set Default Guard State from the Enum we created.
-	EAIState GuardState = EAIState::Suspicious;														//Updated in Begin Play(). I want the state to swap at start, because the change state code it set to not run if the state is the same.
+	UPROPERTY(ReplicatedUsing=OnRep_GuardState)																	/// [NETWORKING (1/3)] This calls the bound function on CLIENTS only, when the var is changed.
+		EAIState GuardState = EAIState::Suspicious;																//Updated in Begin Play(). I want the state to swap at start, because the change state code it set to not run if the state is the same.
+
+	UFUNCTION()  
+		void OnRep_GuardState();																				/// [NETWORKING (2/3)] - This function was bound above, and is called by CLIENTS only, when the var is changed. We can call this manually if we like.
+
+	virtual void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;		/// [NETWORKING (3/3)] ///
 
 	void SetGuardState(EAIState NewState);
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "AI")									
-		void OnStateChanged(EAIState NewState);														//Blueprint Event (Doesn't need to be defined!)
+		void OnStateChanged(EAIState NewState);																	//Blueprint Event (Doesn't need to be defined!)
 
 	/// AI Patrolling ///
 	
