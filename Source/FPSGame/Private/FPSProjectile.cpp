@@ -29,6 +29,10 @@ AFPSProjectile::AFPSProjectile()
 
 	// Die after 3 seconds by default
 	InitialLifeSpan = 3.0f;
+
+	/// [NETWORKING] ///
+	SetReplicates(true);
+	SetReplicateMovement(true);
 }
 
 
@@ -41,7 +45,11 @@ void AFPSProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPr
 	}
 	
 	if (!Instigator) { return; }					//Pointer protection.
-	MakeNoise(1.0f, Instigator);					//IVAN NOTE: 'Instigator' is a value all actors have, usually used for damage instigator. Here, we'll use it to call the actor that spawned, normally the one responsible for damage. Instigator needs a noise emitter for this to work.
-
-	Destroy(); //Moved the destroy down here, because we want everything destroyed. If we destroy before we add stuff, those things won't get destroyed.
+	
+	if (Role == ROLE_Authority)							/// [NETWORKING] If you are the SERVER (NOT client)
+	{
+		MakeNoise(1.0f, Instigator);					//IVAN NOTE: 'Instigator' is a value all actors have, usually used for damage instigator. Here, we'll use it to call the actor that spawned, normally the one responsible for damage. Instigator needs a noise emitter for this to work.
+		Destroy();										//Moved the destroy to last, because we want everything destroyed. If we destroy before we add stuff, those things won't get destroyed.
+	}
+	
 }

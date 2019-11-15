@@ -37,6 +37,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "AI")
 	UPawnNoiseEmitterComponent* NoiseEmitterComp;
 
+
 public:
 	AFPSCharacter();
 
@@ -57,16 +58,20 @@ public:
 
 protected:
 	
-	/** Fires a projectile. */
+	/// Fires a projectile. ///
 	void Fire();
 
-	/** Handles moving forward/backward */
+	/// Handles moving forward/backward ///
 	void MoveForward(float Val);
 
-	/** Handles strafing movement, left and right */
+	/// Handles strafing movement, left and right ///
 	void MoveRight(float Val);
 
 	virtual void SetupPlayerInputComponent(UInputComponent* InputComponent) override;
+
+	/// [NETWORKING] ///
+	UFUNCTION(Server, Reliable, WithValidation)				//Mark this as a Server function, that it's reliable (will reach the server eventually), WithValidation is used for sanity checking by the client (Cheating, Sync issues, etc). 
+		void ServerFire();									//used in the Fire() function for projectile spawning. 
 
 public:
 	/** Returns Mesh1P subobject **/
