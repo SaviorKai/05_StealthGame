@@ -41,7 +41,10 @@ void AExtractionZone::HandleOverlap(UPrimitiveComponent* OverlappedComp, AActor*
 	{
 		AFPSGameMode* OurGameMode = Cast<AFPSGameMode>(GetWorld()->GetAuthGameMode());		//Get game mode and cast to our type.	//Note: GetAuthGameMode() does not work in Multiplayer.(More about this later)
 		
-		OurGameMode->CompleteMission(OverlappingCharacter, true);
+		if (OurGameMode)																	// Pointer Protection. Game mode doesn't exist on clients
+		{
+			OurGameMode->CompleteMission(OverlappingCharacter, true);						
+		}
 	}
 	else
 	{

@@ -7,6 +7,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/PawnNoiseEmitterComponent.h" // UPawnNoiseEmitterComponent
+#include "Net/UnrealNetwork.h" // DOREPLIFETIME & GetLifetimeReplicatedProps
 
 
 AFPSCharacter::AFPSCharacter()
@@ -134,4 +135,15 @@ void AFPSCharacter::ServerFire_Implementation()
 bool AFPSCharacter::ServerFire_Validate()							/// We need to add this because of the "With Validation Flag"
 {
 	return true;													/// returns true if ok. if false, the client will disconnect. 
+}
+
+/// [NETWORKING] ///
+
+void AFPSCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AFPSCharacter, bIsCarryingObjective);
+
+	//DOREPLIFETIME_CONDITION(AAIGuard, GuardState, COND_OwnerOnly);		//We could have used this. COND_OwnerOnly adds the replication to the owner. This would optimize the code.
 }

@@ -53,8 +53,10 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Gameplay")
 	UAnimSequence* FireAnimation;
 
-	UPROPERTY(BlueprintReadOnly, Category="Gameplay")
+	UPROPERTY(Replicated, BlueprintReadOnly, Category="Gameplay")												/// [NETWORKING (1/2)] : Replicated added.
 		bool bIsCarryingObjective = false;
+
+	virtual void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;		/// [NETWORKING (2/2)] : Added the rules for replication
 
 protected:
 	
