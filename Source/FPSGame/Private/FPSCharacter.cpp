@@ -131,7 +131,7 @@ void AFPSCharacter::ServerFire_Implementation()
 	}
 }
 
-/// [NETWORKING] ///
+/// [NETWORKING] ///												//TODO: When do we need to use this(_Validate)? I'm not sure it always has to be added with reliable....
 bool AFPSCharacter::ServerFire_Validate()							/// We need to add this because of the "With Validation Flag"
 {
 	return true;													/// returns true if ok. if false, the client will disconnect. 
