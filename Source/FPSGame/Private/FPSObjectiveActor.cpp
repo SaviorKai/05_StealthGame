@@ -23,7 +23,9 @@ AFPSObjectiveActor::AFPSObjectiveActor()
 	SphereComp->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);						// Changes only Pawn to Overlap.
 	SphereComp->SetupAttachment(MeshComp);
 
-	
+	/// [NETWORKING] ///
+	SetReplicates(true);
+	SetReplicateMovement(true);
 
 }
 
@@ -48,13 +50,16 @@ void AFPSObjectiveActor::NotifyActorBeginOverlap(AActor* OtherActor)
 
 	SpawnEffects();
 
-	AFPSCharacter* OverlappingCharacter = Cast<AFPSCharacter>(OtherActor);			//We're casting here to AFPSCharacter, so that we can access the vars that it will have (bIsCarryingObjective). If the cast fails, the code won't run, due to the pointer protection below. 
+	if (Role == ROLE_Authority)															/// [NETWORKING] If you are the SERVER (NOT client) - Essentially, Only run this code on the server. //TODO: Not entirely sure how this works, when we run in dedicated server mode.
+	{
+		AFPSCharacter* OverlappingCharacter = Cast<AFPSCharacter>(OtherActor);			//We're casting here to AFPSCharacter, so that we can access the vars that it will have (bIsCarryingObjective). If the cast fails, the code won't run, due to the pointer protection below. 
 
-	if (OverlappingCharacter)														//Pointer Protection
-	{ 
-		OverlappingCharacter->bIsCarryingObjective = true;
+		if (OverlappingCharacter)														//Pointer Protection
+		{
+			OverlappingCharacter->bIsCarryingObjective = true;
 
-		Destroy();																	// Destroy this actor, since we don't want anyone else to pick it up.
+			Destroy();																	// Destroy this actor, since we don't want anyone else to pick it up.
+		}
 	}
 	
 }
