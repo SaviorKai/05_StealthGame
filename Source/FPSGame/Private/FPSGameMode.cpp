@@ -9,6 +9,8 @@
 #include "FPSGameState.h" // AFPSGameState
 #include "Engine/World.h" // GetWorld()
 
+#include "FPSPlayerController.h" // AFPSPlayerController
+
 AFPSGameMode::AFPSGameMode()
 {
 	// set default pawn class to our Blueprinted character
@@ -52,5 +54,4 @@ void AFPSGameMode::CompleteMission(APawn* InstigatorPawn, bool bMissionSuccess)
 	
 	// Disable Input of all Controlled Pawns
 	GS->MultiCastOnMissionCompleted(InstigatorPawn, bMissionSuccess);								// Run the function on the game state (this is the UFUNCTION(NetMulticast, Reliable))
-	
 }

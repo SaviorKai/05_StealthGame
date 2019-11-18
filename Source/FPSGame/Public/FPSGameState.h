@@ -16,7 +16,7 @@ class FPSGAME_API AFPSGameState : public AGameStateBase
 
 public:
 
-	UFUNCTION(NetMulticast, Reliable)													//NetMultiCast = This will ensure this is run on all clients (Including the server)
-		void MultiCastOnMissionCompleted(APawn* InstigatorPawn, bool bIsSucessful);
+	UFUNCTION(NetMulticast, Reliable)													// NetMultiCast = This will ensure this is run on all clients (Including the server)
+		void MultiCastOnMissionCompleted(APawn* InstigatorPawn, bool bIsSucessful);		// Note: Game Mode cannot use NetMulticast.
 	
 };
