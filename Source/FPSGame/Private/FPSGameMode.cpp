@@ -7,6 +7,7 @@
 #include "GameFramework/PlayerController.h" //APlayerController
 #include "Kismet/GameplayStatics.h" // UGameplayStatics
 #include "FPSGameState.h" // AFPSGameState
+#include "Engine/World.h" // GetWorld()
 
 AFPSGameMode::AFPSGameMode()
 {
@@ -23,21 +24,28 @@ AFPSGameMode::AFPSGameMode()
 
 void AFPSGameMode::CompleteMission(APawn* InstigatorPawn, bool bMissionSuccess)
 {
-	if (!InstigatorPawn) { return; }																// Pointer Protection
-	//InstigatorPawn->DisableInput(nullptr);				//[MOVED THIS TO GAME STATE CODE] 						
+	if (!InstigatorPawn) { return; }																// Pointer Protection					
 
-	//Set Endgame Spectator View
+	/// Set Endgame Spectator View ///
 	if (!SpectatingViewportClass) { return; }														// PointerProtection
 	auto NewViewTarget = UGameplayStatics::GetActorOfClass(this, SpectatingViewportClass);			// Note: To get the class, we added a variable we can set in blueprints, to pass the correct value.
 	
-	auto InstigatorPawnController = Cast<APlayerController>(InstigatorPawn->GetController());       // Get Controller, which returns AController, and cast it down to APlayerController
+	for (auto item = GetWorld()->GetPlayerControllerIterator(); item; item++)						// Get All the player Controllers in the world
+	{
+		APlayerController* ThePlayerController = item->Get();										// Get the object of the weak pointer (dereference)
+		if (!ThePlayerController) { continue; }														// Pointer Protection (Remember to use continue in for loops)
 
-	InstigatorPawnController->SetViewTargetWithBlend(
-		NewViewTarget,
-		0.5f,
-		EViewTargetBlendFunction::VTBlend_Cubic
-	);
+		// Change the view
+		ThePlayerController->SetViewTargetWithBlend(
+			NewViewTarget,
+			0.5f,
+			EViewTargetBlendFunction::VTBlend_Cubic
+		);
 
+		// Remove Objective Text
+		
+	}
+	
 	/// [NETWORKING] Leverage GameState to run the end game code on all clients (Including server)
 	AFPSGameState* GS = GetGameState<AFPSGameState>();												// This gets the game state from the game mode.									
 	if (!GS) { return; }																			// Pointer Protection
@@ -45,6 +53,4 @@ void AFPSGameMode::CompleteMission(APawn* InstigatorPawn, bool bMissionSuccess)
 	// Disable Input of all Controlled Pawns
 	GS->MultiCastOnMissionCompleted(InstigatorPawn, bMissionSuccess);								// Run the function on the game state (this is the UFUNCTION(NetMulticast, Reliable))
 	
-	
-	OnMissionCompleted(InstigatorPawn, bMissionSuccess);											// This Function is BlueprintImplementable (Thus not defined in C++)
 }

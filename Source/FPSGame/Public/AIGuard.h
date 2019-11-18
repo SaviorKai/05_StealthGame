@@ -51,7 +51,7 @@ protected:
 	void SetGuardState(EAIState NewState);
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "AI")									
-		void OnStateChanged(EAIState NewState);																	//Blueprint Event (Doesn't need to be defined!)
+		void OnStateChanged(EAIState NewState);																	// Blueprint Event (CANNOT be defined!)
 
 	/// AI Patrolling ///
 	
